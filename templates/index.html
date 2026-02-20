@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Overseas - Your Smart Journey Starts Here{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative pt-20 pb-32 overflow-hidden">
+    <!-- Background Accents -->
+    <div
+        class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-[600px] h-[600px] bg-indigo-100 rounded-full blur-3xl opacity-50 -z-10">
+    </div>
+    <div
+        class="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-[400px] h-[400px] bg-emerald-100 rounded-full blur-3xl opacity-40 -z-10">
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div
+            class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 text-sm font-semibold mb-8 animate-fade-in">
+            <span class="flex h-2 w-2 rounded-full bg-indigo-600 animate-pulse"></span>
+            <span>AI-Powered Decision Support</span>
+        </div>
+
+        <h1 class="text-5xl md:text-7xl font-bold text-gray-900 mb-6 tracking-tight leading-tight animate-slide-up">
+            Master Your Future with <br />
+            <span class="gradient-text">Intelligent Guidance</span>
+        </h1>
+
+        <p class="text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed animate-slide-up"
+            style="animation-delay: 0.1s;">
+            AI Overseas helps you navigate the complex world of global education. Get personalized university
+            recommendations, visa risk analysis, and admission probability scores.
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 animate-slide-up"
+            style="animation-delay: 0.2s;">
+            <a href="{% url 'accounts:register' %}"
+                class="w-full sm:w-auto px-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold text-lg shadow-xl shadow-indigo-200 hover:bg-indigo-700 hover:-translate-y-1 transition-all">
+                Get Started Now
+            </a>
+            <a href="#"
+                class="w-full sm:w-auto px-8 py-4 bg-white text-gray-700 border border-gray-200 rounded-2xl font-bold text-lg hover:bg-gray-50 transition-all">
+                Explore Universities
+            </a>
+        </div>
+
+        <!-- Hero Image/Mockup -->
+        <div class="mt-20 relative px-4 sm:px-0 animate-slide-up" style="animation-delay: 0.3s;">
+            <div class="max-w-5xl mx-auto rounded-3xl overflow-hidden shadow-2xl border-8 border-white/50 bg-white">
+                <img src="https://images.unsplash.com/photo-1523240715630-979bb0709a24?auto=format&fit=crop&q=80&w=2070"
+                    alt="Students in University" class="w-full h-auto object-cover">
+                <!-- Overlay Cards -->
+                <div class="absolute -bottom-10 -right-10 hidden lg:block animate-float">
+                    <div class="glass p-6 rounded-2xl shadow-xl w-64">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div
+                                class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-900 text-sm">Visa Success</h4>
+                                <p class="text-xs text-gray-500">98% probability</p>
+                            </div>
+                        </div>
+                        <div class="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-green-500 w-[98%]"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="absolute -top-10 -left-10 hidden lg:block animate-float" style="animation-delay: 1.5s;">
+                    <div class="glass p-6 rounded-2xl shadow-xl w-64">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div
+                                class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-10V5m0 16v-5">
+                                    </path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-900 text-sm">Top Universities</h4>
+                                <p class="text-xs text-gray-500">2,500+ Picked for you</p>
+                            </div>
+                        </div>
+                        <div class="flex -space-x-2">
+                            <div class="w-8 h-8 rounded-full border-2 border-white bg-indigo-300"></div>
+                            <div class="w-8 h-8 rounded-full border-2 border-white bg-emerald-300"></div>
+                            <div class="w-8 h-8 rounded-full border-2 border-white bg-amber-300"></div>
+                            <div
+                                class="w-8 h-8 rounded-full border-2 border-white bg-gray-200 flex items-center justify-center text-[10px] font-bold text-gray-500">
+                                +1k</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-5xl font-bold text-gray-900 mb-4">How It Works</h2>
+            <p class="text-gray-500 max-w-2xl mx-auto">Our AI-driven process makes your overseas application journey
+                seamless and successful.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div
+                class="p-8 rounded-3xl bg-gray-50 hover:bg-white hover:shadow-2xl hover:shadow-indigo-100 transition-all group">
+                <div
+                    class="w-14 h-14 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600 mb-6 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                        </path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Smart Registration</h3>
+                <p class="text-gray-600">Quick and easy multi-step onboarding with face recognition registration for
+                    enhanced security.</p>
+            </div>
+
+            <div
+                class="p-8 rounded-3xl bg-gray-50 hover:bg-white hover:shadow-2xl hover:shadow-indigo-100 transition-all group">
+                <div
+                    class="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-600 mb-6 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                        </path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">AI Prediction</h3>
+                <p class="text-gray-600">Get instant admission and visa probability scores based on your academic and
+                    financial profile.</p>
+            </div>
+
+            <div
+                class="p-8 rounded-3xl bg-gray-50 hover:bg-white hover:shadow-2xl hover:shadow-indigo-100 transition-all group">
+                <div
+                    class="w-14 h-14 bg-amber-100 rounded-2xl flex items-center justify-center text-amber-600 mb-6 group-hover:bg-amber-600 group-hover:text-white transition-all">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
+                        </path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Secure Verification</h3>
+                <p class="text-gray-600">Dual-mode login with face recognition and traditional credentials keeps your
+                    data safe.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

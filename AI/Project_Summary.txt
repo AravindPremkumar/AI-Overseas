@@ -1,0 +1,57 @@
+# 🎓 University Recommendation & Prediction System - Documentation
+
+## 📊 1. About the Dataset
+The dataset (`university_dataset_80_rows.csv`) contains profile requirements and details for 80 international university programs.
+
+### Column Descriptions:
+- **University_Name**: The name of the institution.
+- **Country**: Location of the university (USA, UK, Germany, Canada, Australia).
+- **Course_Field**: The academic discipline (Engineering, Management, IT, Arts, Medical).
+- **Degree_Level**: Type of program (Bachelor or Master).
+- **Min_IELTS**: Minimum English proficiency score required (for English-speaking countries).
+- **Min_German_Score**: Minimum German language score (specifically for Germany).
+- **Min_Academic_Percentage**: Minimum percentage or CGPA required from previous studies.
+- **Tuition_Fee_USD**: Annual cost of study in US Dollars.
+- **Backlogs_Allowed**: Maximum number of failed subjects permitted.
+- **Work_Experience_Required**: Minimum years of professional experience needed.
+- **Intake**: The season of admission (Fall or Spring).
+- **Ranking_Tier**: The target output column (Dream, Target, Safe).
+
+---
+
+## 💻 2. Code Walkthrough (Step-by-Step)
+1. **Data Loading**: We import the CSV file and inspect the first few rows.
+2. **Feature Engineering**: Text-based columns are converted into numbers using `LabelEncoder`.
+3. **Training & Saving**: We train a **Random Forest Classifier** and save it as a `.joblib` file.
+4. **Dynamic Recommendation Logic**: 
+   - **Hard Filtering**: The code checks eligibility based on country. If "Germany", it checks the German Score; otherwise, it checks IELTS.
+   - **ML Caliber Prediction**: Predicts if the student's overall profile strength matches Dream, Target, or Safe universities.
+   - **Hybrid Ranking**: Universities are sorted by a **Match Score** based on how much the student exceeds the specific requirements for that country.
+5. **Testing**: Verified with test profiles for both German and English-speaking destinations.
+
+---
+
+## 🤖 3. Model & Algorithm Details
+- **Algorithm Used**: **Random Forest Classifier** (Handles complex relationships between requirements and university tiers).
+- **Language Logic**: Smart switching between IELTS and German Score based on user country choice.
+- **Output Column**: `Ranking_Tier` (Categorizes student profile strength).
+
+---
+
+## 🎯 4. User Inputs (Features) for Prediction
+1.  **IELTS Score** (Required for USA, UK, Canada, Australia)
+2.  **German Language Score** (Required for Germany)
+3.  **Academic Percentage** (Required for all)
+4.  **Tuition Budget** (Required for all)
+5.  **Number of Backlogs** (Academic filter)
+6.  **Work Experience** (Master's requirement)
+7.  **Course Field** (Selection)
+8.  **Degree Level** (Bachelor/Master)
+9.  **Country** (Determines language filter)
+10. **Intake** (Admission season)
+
+---
+
+## 🏆 5. Final Output
+- **Student Caliber**: Predicted tier (Dream/Target/Safe).
+- **Smart Recommendations**: A list of eligible universities, ranked by the most suitable match for the student's specific language and academic strengths.

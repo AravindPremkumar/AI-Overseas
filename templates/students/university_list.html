@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %}Universities - AI Overseas{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50/50 pb-20 pt-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- Header & Search -->
+        <div class="mb-10 text-center">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">University Catalog</h1>
+            <p class="text-gray-500 mb-8 max-w-2xl mx-auto">Browse through our curated list of global institutions and
+                find the perfect match for your academic journey.</p>
+
+            <form method="GET" class="max-w-4xl mx-auto flex flex-col md:flex-row gap-4">
+                <div class="flex-grow relative">
+                    <input type="text" name="search" value="{{ search_query }}"
+                        placeholder="Search by name, country or field..."
+                        class="w-full pl-12 pr-4 py-4 rounded-2xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all shadow-sm">
+                    <svg class="w-6 h-6 text-gray-400 absolute left-4 top-4" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+
+                <select name="country"
+                    class="px-6 py-4 rounded-2xl border border-gray-200 bg-white focus:border-indigo-500 outline-none transition-all shadow-sm font-medium">
+                    <option value="">All Countries</option>
+                    {% for country in countries %}
+                    <option value="{{ country }}" {% if selected_country == country %}selected{% endif %}>{{ country }}
+                    </option>
+                    {% endfor %}
+                </select>
+
+                <select name="tier"
+                    class="px-6 py-4 rounded-2xl border border-gray-200 bg-white focus:border-indigo-500 outline-none transition-all shadow-sm font-medium">
+                    <option value="">All Tiers</option>
+                    {% for tier in tiers %}
+                    <option value="{{ tier }}" {% if selected_tier == tier %}selected{% endif %}>{{ tier }}</option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit"
+                    class="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100">
+                    Filter
+                </button>
+            </form>
+        </div>
+
+        <!-- University Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for uni in universities %}
+            <div
+                class="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all group">
+                <div class="flex items-center space-x-4 mb-6">
+                    <div
+                        class="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 text-2xl font-bold border border-indigo-100 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                        {{ uni.University_Name|slice:":1" }}
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">{{
+                            uni.University_Name }}</h3>
+                        <div class="flex items-center text-gray-500 text-sm font-medium mt-1">
+                            <svg class="w-4 h-4 mr-1 text-indigo-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            {{ uni.Country }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4 mb-8">
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-gray-500">Field of Study</span>
+                        <span class="font-bold text-gray-900 bg-gray-100 px-3 py-1 rounded-lg">{{ uni.Course_Field
+                            }}</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-gray-500">Degree Type</span>
+                        <span class="font-bold text-gray-900">{{ uni.Degree_Level }}</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-gray-500">Min. Academic %</span>
+                        <span class="font-bold text-gray-900">{{ uni.Min_Academic_Percentage }}%</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-gray-500">Tuition Fee</span>
+                        <span class="font-bold text-emerald-600">${{ uni.Tuition_Fee_USD }}</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <span class="px-4 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider
+                        {% if uni.Ranking_Tier == 'Dream' %}bg-purple-100 text-purple-700
+                        {% elif uni.Ranking_Tier == 'Target' %}bg-indigo-100 text-indigo-700
+                        {% else %}bg-green-100 text-green-700{% endif %}">
+                        {{ uni.Ranking_Tier }} Tier
+                    </span>
+                    <a href="{% url 'students:recommendation' %}"
+                        class="text-indigo-600 font-bold text-sm hover:underline">Check Eligibility →</a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full py-20 text-center bg-white rounded-3xl border border-dashed border-gray-300">
+                <div
+                    class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9.172 9.172a4 4 0 015.656 0M9 10h.01M15 10h.01M12 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                        </path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">No Universities Found</h3>
+                <p class="text-gray-500">Try adjusting your search query or filters.</p>
+                <a href="{% url 'students:university_list' %}" class="mt-6 inline-block text-indigo-600 font-bold">Clear
+                    All Filters</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

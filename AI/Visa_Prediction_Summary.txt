@@ -1,0 +1,59 @@
+# 🛂 AI Visa Eligibility Prediction Module - Documentation
+
+## 📊 1. About the Visa Dataset
+The dataset (`visa_dataset.csv`) contains historical records of student visa applications and their outcomes based on academic, financial, and personal backgrounds.
+
+### Column Descriptions:
+- **Country**: The destination country (USA, UK, Canada, Australia, Germany).
+- **IELTS_Score**: English proficiency score for English-speaking countries.
+- **German_Score**: Language score specifically for German visa applications.
+- **Academic_Percentage**: The student's previous academic performance.
+- **Backlogs**: Total number of failed subjects in previous education.
+- **Course_Level**: Level of study (Bachelor or Master).
+- **Tuition_Fee_USD**: Cost of the selected program.
+- **Sponsor_Available**: Whether the student has a documented financial sponsor (Yes/No).
+- **Bank_Balance_USD**: Liquid funds available for the student's education.
+- **Work_Experience_Years**: Number of years the student has worked professionally.
+- **Gap_Years**: Any break in formal education after the last degree.
+- **Previous_Rejection**: History of any previous visa denials (Yes/No).
+- **Visa_Outcome**: The target result (**Approved** or **Rejected**).
+
+---
+
+## 💻 2. Implementation Steps
+1. **Data Preprocessing**: Categorical strings (like Sponsor and Country) are converted to numerical values using `LabelEncoder`.
+2. **Model Training**: A **Random Forest Classifier** is trained to find patterns between student profiles and visa success rates.
+3. **Probability Calculation**: Instead of a simple "Yes/No", the model calculates the specific **percentage probability** of approval.
+4. **Confidence Categorization**: Based on the probability, the system assigns a risk level (**High Chance**, **Medium Chance**, or **High Risk**).
+5. **Persistence**: All model components are saved to `saved_models/visa/` for live integration.
+
+---
+
+## 🤖 3. Model Accuracy & Algorithm
+- **Algorithm**: **Random Forest Classifier**.
+- **Accuracy**: The model achieved **100% Accuracy** on the provided dummy dataset, effectively learning the clear distinction between strong and weak visa profiles.
+- **Metrics**: Detailed `predict_proba()` is used to ensure students get a nuanced percentage rather than a binary result.
+
+---
+
+## 🎯 4. Input Features Required for Prediction
+To estimate visa chances, the student must provide:
+1.  **Country** of application.
+2.  **IELTS/German Score** (based on country).
+3.  **Academic Percentage**.
+4.  **Backlogs Count**.
+5.  **Course Level** (Bachelor/Master).
+6.  **Tuition Fee** of the university.
+7.  **Sponsor Availability** (Yes/No).
+8.  **Bank Balance** (USD).
+9.  **Work Experience** (Years).
+10. **Gap Years** (Years).
+11. **Previous Visa Rejection History** (Yes/No).
+
+---
+
+## 🏆 5. Final Output
+The system generates a result object containing:
+- **Probability**: A percentage score (e.g., 85.5% chance of approval).
+- **Outcome**: The most likely final decision (Approved/Rejected).
+- **Confidence Level**: Guidance advice (e.g., "High Risk - Profile needs improvement").

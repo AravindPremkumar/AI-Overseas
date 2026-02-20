@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - AI Overseas{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50/50 pb-24" x-data="{ tab: 'personal' }">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-12">
+        <div class="flex flex-col md:flex-row gap-8">
+            <!-- Sidebar -->
+            <div class="w-full md:w-64 space-y-2">
+                <button @click="tab = 'personal'"
+                    class="w-full text-left px-6 py-4 rounded-2xl font-bold transition-all"
+                    :class="tab === 'personal' ? 'bg-indigo-600 text-white shadow-lg' : 'bg-white text-gray-500 hover:bg-gray-100'">
+                    Personal Info
+                </button>
+                <button @click="tab = 'academic'"
+                    class="w-full text-left px-6 py-4 rounded-2xl font-bold transition-all"
+                    :class="tab === 'academic' ? 'bg-indigo-600 text-white shadow-lg' : 'bg-white text-gray-500 hover:bg-gray-100'">
+                    Academic Records
+                </button>
+                <button @click="tab = 'tests'" class="w-full text-left px-6 py-4 rounded-2xl font-bold transition-all"
+                    :class="tab === 'tests' ? 'bg-indigo-600 text-white shadow-lg' : 'bg-white text-gray-500 hover:bg-gray-100'">
+                    Test Scores
+                </button>
+                <button @click="tab = 'documents'"
+                    class="w-full text-left px-6 py-4 rounded-2xl font-bold transition-all"
+                    :class="tab === 'documents' ? 'bg-indigo-600 text-white shadow-lg' : 'bg-white text-gray-500 hover:bg-gray-100'">
+                    Documents
+                </button>
+                <button @click="tab = 'security'"
+                    class="w-full text-left px-6 py-4 rounded-2xl font-bold transition-all"
+                    :class="tab === 'security' ? 'bg-indigo-600 text-white shadow-lg' : 'bg-white text-gray-500 hover:bg-gray-100'">
+                    Security & Face ID
+                </button>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="flex-grow">
+                <div class="bg-white rounded-3xl p-8 md:p-10 shadow-sm border border-gray-100">
+
+                    <!-- Personal Info Tab -->
+                    <div x-show="tab === 'personal'" x-transition>
+                        <h2 class="text-2xl font-bold text-gray-900 mb-6">Personal Information</h2>
+                        <form class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">First Name</label>
+                                    <input type="text" value="{{ user.first_name|default:user.username|capfirst }}"
+                                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Last Name</label>
+                                    <input type="text" value="{{ user.last_name|default:'' }}"
+                                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Email Address</label>
+                                <input type="email" value="{{ user.email|default:'' }}"
+                                    class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-500 cursor-not-allowed outline-none"
+                                    readonly>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Phone Number</label>
+                                    <input type="text" value="+1 234 567 890"
+                                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Nationality</label>
+                                    <input type="text" value="USA"
+                                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all">
+                                </div>
+                            </div>
+                            <button type="submit"
+                                class="px-8 py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg hover:bg-indigo-700 transition-all">Save
+                                Changes</button>
+                        </form>
+                    </div>
+
+                    <!-- Academic Records Tab -->
+                    <div x-show="tab === 'academic'" x-transition>
+                        <h2 class="text-2xl font-bold text-gray-900 mb-6">Academic Records</h2>
+                        <div class="space-y-8">
+                            <div class="p-6 bg-gray-50 rounded-2xl border border-gray-100">
+                                <h3 class="font-bold text-gray-900 mb-4">Undergraduate Degree</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-bold text-gray-700 mb-2">University</label>
+                                        <input type="text" value="State University of New York"
+                                            class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-bold text-gray-700 mb-2">Major</label>
+                                        <input type="text" value="Computer Science"
+                                            class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="flex items-center space-x-2 text-indigo-600 font-bold hover:text-indigo-700">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                <span>Add Another Degree</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Test Scores Tab -->
+                    <div x-show="tab === 'tests'" x-transition>
+                        <h2 class="text-2xl font-bold text-gray-900 mb-6">Standardized Tests</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="p-6 border border-gray-100 rounded-2xl">
+                                <h4 class="font-bold text-gray-400 text-xs uppercase mb-2">GRE Score</h4>
+                                <p class="text-2xl font-bold text-gray-900">325 <span
+                                        class="text-sm text-gray-400 font-normal">/ 340</span></p>
+                                <button class="mt-4 text-indigo-600 text-sm font-bold">Update Score</button>
+                            </div>
+                            <div class="p-6 border border-gray-100 rounded-2xl">
+                                <h4 class="font-bold text-gray-400 text-xs uppercase mb-2">IELTS Band</h4>
+                                <p class="text-2xl font-bold text-gray-900">8.0 <span
+                                        class="text-sm text-gray-400 font-normal">/ 9.0</span></p>
+                                <button class="mt-4 text-indigo-600 text-sm font-bold">Update Score</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Tab -->
+                    <div x-show="tab === 'security'" x-transition>
+                        <h2 class="text-2xl font-bold text-gray-900 mb-6">Security & Authentication</h2>
+
+                        <div class="space-y-8">
+                            <div class="flex items-center justify-between p-6 bg-indigo-50 rounded-2xl">
+                                <div class="flex items-center space-x-4">
+                                    <div
+                                        class="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-gray-900">Face Recognition</h4>
+                                        <p class="text-xs text-gray-500">Last updated: Jan 24, 2026</p>
+                                    </div>
+                                </div>
+                                <button
+                                    class="px-4 py-2 bg-white text-indigo-600 border border-indigo-100 rounded-xl font-bold text-sm hover:shadow-md transition-all">Recapture
+                                    Face</button>
+                            </div>
+
+                            <div class="p-6 border border-gray-100 rounded-2xl">
+                                <h4 class="font-bold text-gray-900 mb-4">Change Password</h4>
+                                <form class="space-y-4">
+                                    <input type="password" placeholder="Current Password"
+                                        class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
+                                    <input type="password" placeholder="New Password"
+                                        class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
+                                    <button class="px-6 py-2 bg-gray-900 text-white rounded-xl font-bold text-sm">Update
+                                        Password</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
