@@ -1,0 +1,324 @@
+{% extends 'base.html' %}
+
+{% block title %}Public Analytics – AI Overseas{% endblock %}
+
+{% block extra_css %}
+<style>
+  .analytics-hero {
+    background: linear-gradient(135deg, #1C3A4A 0%, #2D5566 100%);
+  }
+  .kpi-card {
+    background: white;
+    border-radius: 20px;
+    border: 1px solid #f0f0f0;
+    box-shadow: 0 2px 16px rgba(0,0,0,.05);
+    transition: all .3s;
+  }
+  .kpi-card:hover { transform: translateY(-4px); box-shadow: 0 16px 50px rgba(212,98,26,.12); }
+
+  .chart-card {
+    background: white;
+    border-radius: 24px;
+    border: 1px solid #f0f0f0;
+    box-shadow: 0 2px 16px rgba(0,0,0,.05);
+    padding: 28px;
+  }
+
+  .insight-item {
+    background: linear-gradient(135deg, #f8faff, #eff6ff);
+    border: 1px solid #dbeafe;
+    border-radius: 16px;
+    transition: all .2s;
+  }
+  .insight-item:hover { border-color: #D4621A; transform: scale(1.01); }
+
+  .country-table tr:hover { background: #f9fafb; }
+  .verdict-pill-approved { background:#d1fae5; color:#065f46; border-radius:999px; padding:2px 10px; font-size:11px; font-weight:700; }
+  .verdict-pill-rejected { background:#fee2e2; color:#991b1b; border-radius:999px; padding:2px 10px; font-size:11px; font-weight:700; }
+
+  .read-only-badge {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    backdrop-filter: blur(8px);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Guest Banner -->
+<div class="bg-amber-50 border-b border-amber-200 px-6 py-3 flex items-center justify-between flex-wrap gap-2">
+  <p class="text-sm text-amber-800">
+    📊 <strong>Public Analytics</strong> — all data is aggregated and anonymised.
+    <a href="{% url 'accounts:register' %}" class="font-bold underline text-accent ml-1">Register free</a> to see your personalised visa probability.
+  </p>
+  <a href="{% url 'students:guest_explore' %}" class="text-accent text-sm font-semibold hover:underline">← Back to Explore</a>
+</div>
+
+<!-- Page Hero -->
+<div class="analytics-hero py-16 px-4 text-center">
+  <div class="inline-flex items-center gap-2 px-4 py-1 rounded-full read-only-badge text-white/80 text-xs font-semibold mb-6">
+    🔒 Read-Only · Aggregate Data · No Personal Info
+  </div>
+  <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Public Analytics Dashboard</h1>
+  <p class="text-white/70 max-w-xl mx-auto">Discover visa success trends, tuition benchmarks, and university distribution derived from {{ total_visa_records }} anonymised records.</p>
+</div>
+
+<!-- ──────────── KPI Cards ──────────── -->
+<div class="max-w-7xl mx-auto px-4 -mt-8">
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
+
+    <div class="kpi-card p-6 text-center">
+      <div class="text-3xl mb-2">✅</div>
+      <div class="text-3xl font-bold text-emerald-600">{{ overall_approval_rate }}%</div>
+      <div class="text-gray-500 text-sm mt-1">Overall Visa Approval</div>
+    </div>
+
+    <div class="kpi-card p-6 text-center">
+      <div class="text-3xl mb-2">💰</div>
+      <div class="text-3xl font-bold text-primary">${{ approved_balance|floatformat:0 }}</div>
+      <div class="text-gray-500 text-sm mt-1">Avg Balance (Approved)</div>
+    </div>
+
+    <div class="kpi-card p-6 text-center">
+      <div class="text-3xl mb-2">🎯</div>
+      <div class="text-3xl font-bold text-primary">{{ approved_ielts }}</div>
+      <div class="text-gray-500 text-sm mt-1">Avg IELTS (Approved)</div>
+    </div>
+
+    <div class="kpi-card p-6 text-center">
+      <div class="text-3xl mb-2">📁</div>
+      <div class="text-3xl font-bold text-gray-700">{{ total_visa_records }}</div>
+      <div class="text-gray-500 text-sm mt-1">Visa Records Analysed</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ──────────── Charts Grid ──────────── -->
+<div class="max-w-7xl mx-auto px-4 py-14">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+    <!-- Chart 1 – Visa Approval by Country -->
+    <div class="chart-card">
+      <h3 class="font-bold text-gray-900 text-lg mb-1">Visa Approval Rate by Country</h3>
+      <p class="text-gray-400 text-sm mb-6">Percentage of approved visas per destination</p>
+      <canvas id="visaApprovalChart" height="240"></canvas>
+    </div>
+
+    <!-- Chart 2 – Average Tuition by Country -->
+    <div class="chart-card">
+      <h3 class="font-bold text-gray-900 text-lg mb-1">Average Annual Tuition Fee</h3>
+      <p class="text-gray-400 text-sm mb-6">USD / year (paid institutions only)</p>
+      <canvas id="tuitionChart" height="240"></canvas>
+    </div>
+
+    <!-- Chart 3 – Field Popularity -->
+    <div class="chart-card">
+      <h3 class="font-bold text-gray-900 text-lg mb-1">Course Field Distribution</h3>
+      <p class="text-gray-400 text-sm mb-6">Total universities offering each field</p>
+      <canvas id="fieldChart" height="240"></canvas>
+    </div>
+
+    <!-- Chart 4 – Ranking Tier Breakdown -->
+    <div class="chart-card">
+      <h3 class="font-bold text-gray-900 text-lg mb-1">University Ranking Tier Mix</h3>
+      <p class="text-gray-400 text-sm mb-6">Dream / Target / Safe distribution</p>
+      <canvas id="tierChart" height="240"></canvas>
+    </div>
+
+  </div>
+</div>
+
+<!-- ──────────── Key Insights ──────────── -->
+<div class="max-w-7xl mx-auto px-4 pb-14">
+  <h2 class="text-2xl font-bold text-gray-900 mb-6">📌 Key Insights</h2>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+
+    <div class="insight-item p-6">
+      <div class="text-2xl mb-3">💳</div>
+      <h4 class="font-bold text-gray-800 mb-1">Bank Balance Matters</h4>
+      <p class="text-gray-500 text-sm">Approved applicants had an average balance of <strong>${{ approved_balance|floatformat:0 }}</strong> vs <strong>${{ rejected_balance|floatformat:0 }}</strong> for rejected ones — a <strong>${{ approved_balance|floatformat:0 }}</strong> gap indicates financial proof is critical.</p>
+    </div>
+
+    <div class="insight-item p-6">
+      <div class="text-2xl mb-3">🌐</div>
+      <h4 class="font-bold text-gray-800 mb-1">IELTS Score Gap</h4>
+      <p class="text-gray-500 text-sm">Approved applicants averaged <strong>IELTS {{ approved_ielts }}</strong> vs <strong>{{ rejected_ielts }}</strong> for rejected — improving language score can significantly boost chances.</p>
+    </div>
+
+    <div class="insight-item p-6">
+      <div class="text-2xl mb-3">🏫</div>
+      <h4 class="font-bold text-gray-800 mb-1">IELTS Requirements by Country</h4>
+      <div class="space-y-2 mt-2">
+        {% for country, scores in ielts_by_country.items %}
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-600">{{ country }}</span>
+          <span class="font-semibold text-gray-800">{{ scores.min }} – {{ scores.max }} (avg {{ scores.avg }})</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="insight-item p-6">
+      <div class="text-2xl mb-3">💸</div>
+      <h4 class="font-bold text-gray-800 mb-1">Tuition Benchmarks</h4>
+      <div class="space-y-2 mt-2">
+        {% for country, tuition in avg_tuition_by_country.items %}
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-600">{{ country }}</span>
+          <span class="font-semibold {% if tuition == 0 %}text-emerald-600{% else %}text-gray-800{% endif %}">
+            {% if tuition == 0 %}Often Free{% else %}~${{ tuition|floatformat:0 }}/yr{% endif %}
+          </span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="insight-item p-6">
+      <div class="text-2xl mb-3">📊</div>
+      <h4 class="font-bold text-gray-800 mb-1">Visa Approval Rates</h4>
+      <div class="space-y-3 mt-2">
+        {% for country, rate in visa_approval_by_country.items %}
+        <div>
+          <div class="flex justify-between text-sm mb-1">
+            <span class="text-gray-600">{{ country }}</span>
+            <span class="font-bold {% if rate > 70 %}text-emerald-600{% elif rate > 50 %}text-amber-600{% else %}text-red-600{% endif %}">{{ rate }}%</span>
+          </div>
+          <div class="w-full bg-gray-100 rounded-full h-1.5">
+            <div class="h-1.5 rounded-full {% if rate > 70 %}bg-emerald-500{% elif rate > 50 %}bg-amber-400{% else %}bg-red-400{% endif %}" style="width:{{ rate }}%"></div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="insight-item p-6">
+      <div class="text-2xl mb-3">🎓</div>
+      <h4 class="font-bold text-gray-800 mb-1">Field Opportunities</h4>
+      <div class="space-y-2 mt-2">
+        {% for field, count in field_counts.items %}
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-600">{{ field }}</span>
+          <span class="font-semibold text-primary">{{ count }} unis</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ──────────── CTA ──────────── -->
+<div class="bg-gradient-to-r from-primary to-primary-dark py-16 px-4 text-center">
+  <h2 class="text-3xl font-bold text-white mb-3">Get Your Own AI Visa Probability Score</h2>
+  <p class="text-white/80 mb-8 max-w-xl mx-auto">These are aggregate trends. Register free to get <em>your personalised</em> evaluation based on your academic profile, finances, and target country.</p>
+  <a href="{% url 'accounts:register' %}" class="inline-block px-10 py-4 bg-white text-primary rounded-2xl font-bold text-lg hover:scale-105 transition-all shadow-xl shadow-black/10">
+    🚀 Register & Get AI Score
+  </a>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+  const COLORS = ['rgba(28,58,74,0.85)', 'rgba(212,98,26,0.85)', 'rgba(16,185,129,0.85)', 'rgba(239,68,68,0.8)', 'rgba(124,58,237,0.85)'];
+  const BORDER_COLORS = ['#1C3A4A', '#D4621A', '#10B981', '#EF4444', '#7C3AED'];
+
+  // Chart 1 – Visa Approval by Country
+  const visaData = {{ visa_approval_json|safe }};
+  new Chart(document.getElementById('visaApprovalChart'), {
+    type: 'bar',
+    data: {
+      labels: Object.keys(visaData),
+      datasets: [{
+        label: 'Approval Rate (%)',
+        data: Object.values(visaData),
+        backgroundColor: COLORS,
+        borderRadius: 10,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, max: 100, grid: { color: '#f3f4f6' }, ticks: { callback: v => v + '%' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+
+  // Chart 2 – Avg Tuition
+  const tuitionData = {{ avg_tuition_json|safe }};
+  const nonZeroTuition = Object.fromEntries(Object.entries(tuitionData).filter(([_, v]) => v > 0));
+  new Chart(document.getElementById('tuitionChart'), {
+    type: 'bar',
+    data: {
+      labels: Object.keys(nonZeroTuition),
+      datasets: [{
+        label: 'Avg Tuition (USD)',
+        data: Object.values(nonZeroTuition),
+        backgroundColor: 'rgba(16,185,129,0.8)',
+        borderRadius: 10,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, grid: { color: '#f3f4f6' }, ticks: { callback: v => '$' + v.toLocaleString() } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+
+  // Chart 3 – Field Popularity
+  const fieldData = {{ field_counts_json|safe }};
+  new Chart(document.getElementById('fieldChart'), {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(fieldData),
+      datasets: [{
+        data: Object.values(fieldData),
+        backgroundColor: COLORS,
+        borderColor: BORDER_COLORS,
+        borderWidth: 2,
+        hoverOffset: 12,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'right', labels: { padding: 16, font: { size: 12 } } }
+      },
+      cutout: '60%',
+    }
+  });
+
+  // Chart 4 – Tier Breakdown
+  const tierData = {{ tier_counts_json|safe }};
+  const tierColors = { 'Dream': 'rgba(167,139,250,0.85)', 'Target': 'rgba(96,165,250,0.85)', 'Safe': 'rgba(52,211,153,0.85)' };
+  new Chart(document.getElementById('tierChart'), {
+    type: 'pie',
+    data: {
+      labels: Object.keys(tierData),
+      datasets: [{
+        data: Object.values(tierData),
+        backgroundColor: Object.keys(tierData).map(k => tierColors[k] || 'rgba(209,213,219,0.85)'),
+        borderWidth: 2,
+        borderColor: '#fff',
+        hoverOffset: 12,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'right', labels: { padding: 16, font: { size: 12 } } }
+      }
+    }
+  });
+</script>
+{% endblock %}

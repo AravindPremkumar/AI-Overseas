@@ -1,0 +1,143 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Broadways Admin - {% block title %}Dashboard{% endblock %}</title>
+    
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1C3A4A',
+                        'primary-dark': '#0F2530',
+                        'primary-light': '#2D5566',
+                        accent: '#D4621A',
+                        'accent-dark': '#B84E14',
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; }
+        h1, h2, h3, h4, h5, h6, .font-display { font-family: 'Outfit', sans-serif !important; }
+        .sidebar-link.active { background: rgba(212,98,26,0.1); color: #D4621A; border-left: 4px solid #D4621A; }
+        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+    </style>
+</head>
+<body class="flex min-h-screen" x-data="{ showLogoutModal: false }">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white border-r border-gray-200 flex flex-col fixed inset-y-0 left-0 z-50">
+        <div class="px-6 py-8 border-b border-gray-100 flex items-center justify-center">
+             <div class="flex items-center gap-2.5 group">
+                <div class="relative w-10 h-10 flex items-center justify-center overflow-hidden bg-primary rounded-lg shadow-lg">
+                    <img src="{% static 'broadways_emblem.png' %}" alt="Logo" class="w-16 h-16 max-w-none object-contain" style="mix-blend-mode: screen; filter: brightness(1.1);">
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-lg font-black text-primary tracking-widest leading-none uppercase font-display">Broadways</span>
+                    <span class="text-[8px] font-bold text-accent tracking-[.25em] leading-tight uppercase opacity-90 mt-1 font-display">Admin Panel</span>
+                </div>
+            </div>
+        </div>
+        
+        <nav class="flex-1 py-6 px-4 space-y-1">
+            <a href="{% url 'admins:dashboard' %}" class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-600 hover:text-accent font-semibold rounded-xl transition-all {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                Dashboard
+            </a>
+            <a href="{% url 'admins:analytics' %}" class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-600 hover:text-accent font-semibold rounded-xl transition-all {% if request.resolver_match.url_name == 'analytics' %}active{% endif %}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                Analytics
+            </a>
+            <a href="{% url 'admins:manage_users' %}" class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-600 hover:text-accent font-semibold rounded-xl transition-all {% if request.resolver_match.url_name == 'manage_users' %}active{% endif %}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                Manage Users
+            </a>
+            <a href="{% url 'admins:manage_universities' %}" class="sidebar-link flex items-center gap-3 px-4 py-3 text-gray-600 hover:text-accent font-semibold rounded-xl transition-all {% if 'university' in request.resolver_match.url_name %}active{% endif %}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-10V5m0 16v-5"></path></svg>
+                Universities
+            </a>
+        </nav>
+        
+        <div class="p-6 border-t border-gray-100">
+            <button @click="showLogoutModal = true" class="flex items-center gap-3 w-full px-4 py-3 text-red-600 hover:bg-red-50 font-bold rounded-xl transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                Logout
+            </button>
+        </div>
+    </aside>
+
+    <!-- Logout Modal -->
+    <div x-show="showLogoutModal" 
+         class="fixed inset-0 z-[100] overflow-y-auto" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="fixed inset-0 bg-primary/40 backdrop-blur-sm" @click="showLogoutModal = false"></div>
+            
+            <div class="bg-white rounded-[2.5rem] overflow-hidden shadow-2xl transform transition-all max-w-sm w-full relative z-10 p-10 text-center">
+                <div class="w-20 h-20 bg-accent/10 text-accent rounded-3xl flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                </div>
+                <h3 class="text-2xl font-black text-primary font-display mb-3 uppercase tracking-wider">Logging Out?</h3>
+                <p class="text-gray-500 font-medium mb-8">Are you sure you want to end your administrative session?</p>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <button @click="showLogoutModal = false" class="px-6 py-3.5 bg-gray-50 text-gray-400 font-bold rounded-2xl hover:bg-gray-100 hover:text-gray-600 transition-all uppercase tracking-widest text-[10px]">Cancel</button>
+                    <a href="{% url 'admins:logout' %}" class="px-6 py-3.5 bg-accent text-white font-bold rounded-2xl hover:bg-accent-dark transition-all shadow-lg shadow-accent/20 uppercase tracking-widest text-[10px]">Logout Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Content Area -->
+    <main class="flex-1 ml-64 p-8">
+        <header class="flex justify-between items-center mb-10">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">{% block header_title %}Overview{% endblock %}</h1>
+                <p class="text-gray-500 mt-1">Hello, {{ request.user.username }}!</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="{% url 'home' %}" target="_blank" class="text-sm font-semibold text-primary/60 hover:text-primary underline">Visit Site →</a>
+                <div class="w-10 h-10 bg-accent rounded-full flex items-center justify-center text-white font-bold">A</div>
+            </div>
+        </header>
+
+        {% if messages %}
+        <div class="mb-8 space-y-3">
+            {% for message in messages %}
+            <div class="px-4 py-3 rounded-xl border {% if message.tags == 'success' %}bg-green-50 border-green-200 text-green-700{% else %}bg-red-50 border-red-200 text-red-700{% endif %} flex items-center justify-between">
+                <span class="font-medium">{{ message }}</span>
+                <button onclick="this.parentElement.remove()" class="opacity-50 hover:opacity-100">&times;</button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block admin_content %}{% endblock %}
+    </main>
+
+</body>
+</html>

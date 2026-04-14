@@ -1,0 +1,163 @@
+{% extends 'admins/base_admin.html' %}
+
+{% block title %}Analytics | Broadways Admin{% endblock %}
+{% block header_title %}Platform Analytics{% endblock %}
+
+{% block admin_content %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<!-- ── Summary Cards ── -->
+<div class="grid grid-cols-2 lg:grid-cols-6 gap-5 mb-10">
+    <div class="col-span-1 bg-white rounded-2xl p-5 shadow-sm border border-gray-100 text-center">
+        <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">Total Users</p>
+        <h3 class="text-3xl font-black text-gray-900">{{ total_users }}</h3>
+    </div>
+    <div class="col-span-1 bg-white rounded-2xl p-5 shadow-sm border border-gray-100 text-center">
+        <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">Active</p>
+        <h3 class="text-3xl font-black text-green-600">{{ active_users }}</h3>
+    </div>
+    <div class="col-span-1 bg-white rounded-2xl p-5 shadow-sm border border-gray-100 text-center">
+        <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">Inactive</p>
+        <h3 class="text-3xl font-black text-red-500">{{ inactive_users }}</h3>
+    </div>
+    <div class="col-span-1 bg-white rounded-2xl p-5 shadow-sm border border-gray-100 text-center">
+        <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">New (30d)</p>
+        <h3 class="text-3xl font-black" style="color:#D4621A;">{{ new_this_month }}</h3>
+    </div>
+    <div class="col-span-1 bg-white rounded-2xl p-5 shadow-sm border border-gray-100 text-center">
+        <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">Profile Fill</p>
+        <h3 class="text-3xl font-black text-indigo-600">{{ avg_completion }}%</h3>
+    </div>
+    <div class="col-span-1 bg-white rounded-2xl p-5 shadow-sm border border-gray-100 text-center">
+        <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">Universities</p>
+        <h3 class="text-3xl font-black text-gray-900">{{ total_unis }}</h3>
+    </div>
+</div>
+
+<!-- ── Row 1: Users by Nationality + Active vs Inactive ── -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+    <div class="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <h2 class="text-base font-bold text-gray-800 mb-4">Users by Nationality</h2>
+        <div class="relative" style="height:260px;">
+            <canvas id="nationalityChart"></canvas>
+        </div>
+    </div>
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <h2 class="text-base font-bold text-gray-800 mb-4">Active vs Inactive Users</h2>
+        <div class="relative flex items-center justify-center" style="height:260px;">
+            <canvas id="activeChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- ── Row 2: Top Preferred Destinations + University Tier ── -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+    <div class="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <h2 class="text-base font-bold text-gray-800 mb-4">Top Preferred Destinations</h2>
+        <div class="relative" style="height:260px;">
+            <canvas id="prefChart"></canvas>
+        </div>
+    </div>
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <h2 class="text-base font-bold text-gray-800 mb-4">University Tier Breakdown</h2>
+        <div class="relative flex items-center justify-center" style="height:260px;">
+            <canvas id="tierChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- ── Row 3: Universities by Country + Degree Level ── -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <h2 class="text-base font-bold text-gray-800 mb-4">Universities by Country</h2>
+        <div class="relative" style="height:260px;">
+            <canvas id="uniCountryChart"></canvas>
+        </div>
+    </div>
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <h2 class="text-base font-bold text-gray-800 mb-4">Universities by Degree Level</h2>
+        <div class="relative" style="height:260px;">
+            <canvas id="degreeChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    const PALETTE_PRIMARY = ['#1C3A4A','#2D5566','#3E7080','#4F8B9B','#6AA5B5','#85BFCF','#A0D9E9','#BBF3FF'];
+    const PALETTE_ACCENT  = ['#D4621A','#E8793A','#F5915A','#FFA97A','#B84E14','#9B4110','#7E340C','#613808'];
+    const PALETTE_MIXED   = ['#1C3A4A','#D4621A','#2D5566','#E8793A','#4F8B9B','#F5915A','#6AA5B5','#FFA97A'];
+
+    function makeChart(id, type, labels, data, palette, opts = {}) {
+        const ctx = document.getElementById(id);
+        if (!ctx) return;
+        new Chart(ctx, {
+            type,
+            data: {
+                labels,
+                datasets: [{
+                    data,
+                    backgroundColor: palette,
+                    borderColor: type === 'bar' || type === 'horizontalBar' ? palette : '#fff',
+                    borderWidth: type === 'doughnut' ? 3 : 1,
+                    borderRadius: type === 'bar' ? 6 : 0,
+                    ...opts.datasetExtra
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: type === 'doughnut',
+                        position: 'bottom',
+                        labels: { font: { family: 'Plus Jakarta Sans', size: 11 }, boxWidth: 12, padding: 16 }
+                    }
+                },
+                scales: type !== 'doughnut' ? {
+                    x: { grid: { display: false }, ticks: { font: { family: 'Plus Jakarta Sans', size: 11 } } },
+                    y: { grid: { color: '#f1f5f9' }, ticks: { font: { family: 'Plus Jakarta Sans', size: 11 } } }
+                } : {},
+                ...opts.chartExtra
+            }
+        });
+    }
+
+    const natLabels  = {{ nationality_labels_json|safe }};
+    const natData    = {{ nationality_data_json|safe }};
+    const prefLabels = {{ pref_labels_json|safe }};
+    const prefData   = {{ pref_data_json|safe }};
+    const tierLabels = {{ tier_labels_json|safe }};
+    const tierData   = {{ tier_data_json|safe }};
+    const uniCLabels = {{ uni_country_labels_json|safe }};
+    const uniCData   = {{ uni_country_data_json|safe }};
+    const degLabels  = {{ degree_labels_json|safe }};
+    const degData    = {{ degree_data_json|safe }};
+    const activeUsers   = {{ active_users }};
+    const inactiveUsers = {{ inactive_users }};
+
+    // Nationality bar
+    makeChart('nationalityChart', 'bar', natLabels.length ? natLabels : ['No data'], natLabels.length ? natData : [0], PALETTE_PRIMARY);
+
+    // Active vs inactive doughnut
+    makeChart('activeChart', 'doughnut',
+        ['Active', 'Inactive'],
+        [activeUsers, inactiveUsers],
+        ['#16a34a', '#ef4444']
+    );
+
+    // Preferred destinations bar
+    makeChart('prefChart', 'bar', prefLabels.length ? prefLabels : ['No data'], prefLabels.length ? prefData : [0], PALETTE_ACCENT);
+
+    // Tier doughnut
+    const tierPalette = { 'Dream': '#D4621A', 'Target': '#1C3A4A', 'Safe': '#16a34a' };
+    const tierColors = tierLabels.map(l => tierPalette[l] || '#6AA5B5');
+    makeChart('tierChart', 'doughnut', tierLabels.length ? tierLabels : ['No data'], tierLabels.length ? tierData : [0], tierColors);
+
+    // Uni by Country bar
+    makeChart('uniCountryChart', 'bar', uniCLabels.length ? uniCLabels : ['No data'], uniCLabels.length ? uniCData : [0], PALETTE_MIXED);
+
+    // Degree level bar
+    makeChart('degreeChart', 'bar', degLabels.length ? degLabels : ['No data'], degLabels.length ? degData : [0], PALETTE_PRIMARY);
+</script>
+{% endblock %}

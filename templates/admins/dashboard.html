@@ -1,0 +1,119 @@
+{% extends 'admins/base_admin.html' %}
+
+{% block title %}Dashboard | Broadways Admin{% endblock %}
+{% block header_title %}Analytics Overview{% endblock %}
+
+{% block admin_content %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+    <!-- Stat Card -->
+    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between group hover:border-accent transition-all">
+        <div>
+            <p class="text-gray-500 font-bold uppercase tracking-wider text-xs">Total Users</p>
+            <h3 class="text-3xl font-bold text-gray-900 mt-2">{{ total_users }}</h3>
+        </div>
+        <div class="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        </div>
+    </div>
+    
+    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between group hover:border-accent transition-all">
+        <div>
+            <p class="text-gray-500 font-bold uppercase tracking-wider text-xs">Universities</p>
+            <h3 class="text-3xl font-bold text-gray-900 mt-2">{{ total_unis }}</h3>
+        </div>
+        <div class="w-12 h-12 bg-accent/10 rounded-2xl flex items-center justify-center text-accent group-hover:bg-accent group-hover:text-white transition-all">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-10V5m0 16v-5"></path></svg>
+        </div>
+    </div>
+    
+    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between group hover:border-accent transition-all">
+        <div>
+            <p class="text-gray-500 font-bold uppercase tracking-wider text-xs">Profiles Created</p>
+            <h3 class="text-3xl font-bold text-gray-900 mt-2">{{ total_profiles }}</h3>
+        </div>
+        <div class="w-12 h-12 bg-primary-light/10 rounded-2xl flex items-center justify-center text-primary-light group-hover:bg-primary-light group-hover:text-white transition-all">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        </div>
+    </div>
+    
+    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between group hover:border-accent transition-all">
+        <div>
+            <p class="text-gray-500 font-bold uppercase tracking-wider text-xs">Avg Match Strength</p>
+            <h3 class="text-3xl font-bold text-gray-900 mt-2">72%</h3>
+        </div>
+        <div class="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center text-green-600 group-hover:bg-green-600 group-hover:text-white transition-all">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Recent Users -->
+    <div class="lg:col-span-2 bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+        <div class="flex items-center justify-between mb-8">
+            <h2 class="text-xl font-bold text-gray-900">Recent Users</h2>
+            <a href="{% url 'admins:manage_users' %}" class="text-sm font-semibold text-accent hover:underline">View All →</a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="text-gray-400 text-xs uppercase tracking-wider border-b border-gray-50">
+                        <th class="py-3 px-4 font-bold">Username</th>
+                        <th class="py-3 px-4 font-bold">Joining Date</th>
+                        <th class="py-3 px-4 font-bold">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50">
+                    {% for user in recent_users %}
+                    <tr>
+                        <td class="py-4 px-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
+                                    {{ user.username|slice:":1"|upper }}
+                                </div>
+                                <div class="font-bold text-gray-900 truncate max-w-[150px]">{{ user.username }}</div>
+                            </div>
+                        </td>
+                        <td class="py-4 px-4 text-sm text-gray-600 font-medium">{{ user.date_joined|date:"F d, Y" }}</td>
+                        <td class="py-4 px-4">
+                            <span class="inline-block px-3 py-1 bg-green-50 text-green-700 rounded-full text-[10px] font-bold uppercase tracking-wider">Active</span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="3" class="py-8 text-center text-gray-400 italic">No users joined yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="bg-primary rounded-3xl p-8 shadow-xl shadow-primary/20 text-white flex flex-col justify-between">
+        <div>
+            <h2 class="text-xl font-bold mb-4 font-display">Administrative Actions</h2>
+            <p class="text-white/60 text-sm mb-8">Quickly manage your platform data and users.</p>
+            
+            <div class="space-y-3">
+                <a href="{% url 'admins:add_university' %}" class="flex items-center gap-3 w-full bg-white/10 hover:bg-white/20 px-4 py-3 rounded-2xl transition-all border border-white/10">
+                    <span class="w-8 h-8 rounded-xl bg-accent flex items-center justify-center text-white">+</span>
+                    <span class="font-bold text-sm tracking-wide font-display">Add University</span>
+                </a>
+                <a href="{% url 'admins:manage_users' %}" class="flex items-center gap-3 w-full bg-white/10 hover:bg-white/20 px-4 py-3 rounded-2xl transition-all border border-white/10">
+                    <span class="w-8 h-8 rounded-xl bg-primary-light flex items-center justify-center text-white">👤</span>
+                    <span class="font-bold text-sm tracking-wide font-display">Manage Users</span>
+                </a>
+            </div>
+        </div>
+        
+        <div class="mt-8 pt-6 border-t border-white/10">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center font-black">A</div>
+                <div>
+                    <div class="font-bold text-sm uppercase tracking-wider font-display">{{ request.user.username }}</div>
+                    <div class="text-[10px] text-white/50 uppercase tracking-[.2em]">Superadministrator</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

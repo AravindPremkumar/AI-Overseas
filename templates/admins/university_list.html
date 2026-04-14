@@ -1,0 +1,70 @@
+{% extends 'admins/base_admin.html' %}
+
+{% block title %}Manage Universities | Broadways Admin{% endblock %}
+{% block header_title %}University Repository{% endblock %}
+
+{% block admin_content %}
+<div class="mb-8 flex justify-between items-center">
+    <div class="relative w-72">
+        <input type="text" placeholder="Search universities..." class="w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-accent outline-none transition-all pl-12 font-medium">
+        <svg class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+    </div>
+    <a href="{% url 'admins:add_university' %}" class="bg-accent hover:bg-accent-dark text-white px-8 py-3.5 rounded-2xl font-bold shadow-lg shadow-accent/20 transition-all hover:scale-105 active:scale-95 flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"></path></svg>
+        Add New University
+    </a>
+</div>
+
+<div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+    <table class="w-full text-left">
+        <thead class="bg-gray-50/50">
+            <tr class="text-gray-400 text-xs uppercase tracking-wider border-b border-gray-100">
+                <th class="py-4 px-6 font-bold">University Name</th>
+                <th class="py-4 px-6 font-bold">Country</th>
+                <th class="py-4 px-6 font-bold">Field</th>
+                <th class="py-4 px-6 font-bold">Tier</th>
+                <th class="py-4 px-6 font-bold">Min Academic</th>
+                <th class="py-4 px-6 font-bold text-right">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+            {% for uni in universities %}
+            <tr class="group hover:bg-gray-50/50 transition-colors">
+                <td class="py-5 px-6">
+                    <div class="font-bold text-gray-900 group-hover:text-accent transition-colors">{{ uni.name }}</div>
+                    <div class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">{{ uni.degree_level }}</div>
+                </td>
+                <td class="py-5 px-6">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/5 text-primary text-[11px] font-bold rounded-full uppercase tracking-wider">
+                        🌎 {{ uni.country }}
+                    </span>
+                </td>
+                <td class="py-5 px-6 text-sm text-gray-600 font-medium">{{ uni.course_field }}</td>
+                <td class="py-5 px-6">
+                    {% if uni.ranking_tier == 'Dream' %}
+                        <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-[10px] font-bold uppercase tracking-wider font-display">Dream</span>
+                    {% elif uni.ranking_tier == 'Target' %}
+                        <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-bold uppercase tracking-wider font-display">Target</span>
+                    {% else %}
+                        <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-bold uppercase tracking-wider font-display">Safe</span>
+                    {% endif %}
+                </td>
+                <td class="py-5 px-6 text-sm font-bold text-gray-900">{{ uni.min_academic_percentage }}%</td>
+                <td class="py-5 px-6 text-right">
+                    <div class="flex items-center justify-end gap-2">
+                        <a href="{% url 'admins:edit_university' uni.pk %}" class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        </a>
+                        <a href="{% url 'admins:delete_university' uni.pk %}" class="w-10 h-10 rounded-xl bg-red-50 text-red-600 flex items-center justify-center hover:bg-red-600 hover:text-white transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="py-12 text-center text-gray-400 italic font-medium">No universities available in repository.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

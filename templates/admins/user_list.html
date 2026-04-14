@@ -1,0 +1,83 @@
+{% extends 'admins/base_admin.html' %}
+
+{% block title %}Manage Users | Broadways Admin{% endblock %}
+{% block header_title %}User Management{% endblock %}
+
+{% block admin_content %}
+<div class="mb-8 flex justify-between items-center">
+    <div class="relative w-80">
+        <input type="text" placeholder="Search by name, email, or username..." class="w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-accent outline-none transition-all pl-12 font-medium">
+        <svg class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+    </div>
+    <div class="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-widest bg-white border border-gray-100 px-4 py-3 rounded-2xl shadow-sm">
+        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+        {{ users.count }} Total Members
+    </div>
+</div>
+
+<div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+    <table class="w-full text-left">
+        <thead class="bg-gray-50/50">
+            <tr class="text-gray-400 text-xs uppercase tracking-wider border-b border-gray-100">
+                <th class="py-4 px-6 font-bold">User Identity</th>
+                <th class="py-4 px-6 font-bold">Contact Information</th>
+                <th class="py-4 px-6 font-bold">Registration Date</th>
+                <th class="py-4 px-6 font-bold">Account Status</th>
+                <th class="py-4 px-6 font-bold text-right">Activity Log</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+            {% for user in users %}
+            <tr class="group hover:bg-gray-50/50 transition-colors">
+                <td class="py-5 px-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary font-black text-lg group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
+                            {{ user.username|slice:":1"|upper }}
+                        </div>
+                        <div>
+                            <div class="font-bold text-gray-900 group-hover:text-accent transition-colors">{{ user.get_full_name|default:user.username }}</div>
+                            <div class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">@{{ user.username }}</div>
+                        </div>
+                    </div>
+                </td>
+                <td class="py-5 px-6">
+                    <div class="text-sm font-medium text-gray-600">{{ user.email }}</div>
+                    <div class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Global Member</div>
+                </td>
+                <td class="py-5 px-6">
+                    <div class="text-sm font-bold text-gray-900">{{ user.date_joined|date:"F d, Y" }}</div>
+                    <div class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Joined at {{ user.date_joined|date:"P" }}</div>
+                </td>
+                <td class="py-5 px-6">
+                    {% if user.is_active %}
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-700 text-[10px] font-bold rounded-full uppercase tracking-wider">
+                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                        Active Account
+                    </span>
+                    {% else %}
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-red-50 text-red-700 text-[10px] font-bold rounded-full uppercase tracking-wider">
+                        <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                        Deactivated
+                    </span>
+                    {% endif %}
+                </td>
+                <td class="py-5 px-6 text-right">
+                    <div class="flex items-center justify-end gap-3">
+                        <a href="{% url 'admins:toggle_user_status' user.pk %}" 
+                           class="px-4 py-2 rounded-xl text-xs font-bold transition-all uppercase tracking-widest border border-gray-200 
+                                  {% if user.is_active %}text-red-600 hover:bg-red-50 border-red-100{% else %}text-green-600 hover:bg-green-50 border-green-100{% endif %}">
+                            {% if user.is_active %}Deactivate Account{% else %}Activate Account{% endif %}
+                        </a>
+                        <button class="w-10 h-10 bg-gray-50 text-gray-500 hover:bg-primary hover:text-white rounded-xl flex items-center justify-center transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0zM2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="py-12 text-center text-gray-400 italic font-medium">No members found in repository.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

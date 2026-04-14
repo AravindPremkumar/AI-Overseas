@@ -3,6 +3,24 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
+
+class University(models.Model):
+    name = models.CharField(max_length=255)
+    country = models.CharField(max_length=100)
+    course_field = models.CharField(max_length=100)
+    degree_level = models.CharField(max_length=100)
+    min_ielts = models.FloatField(default=0.0)
+    min_german_score = models.FloatField(default=0.0)
+    min_academic_percentage = models.FloatField(default=0.0)
+    tuition_fee_usd = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
+    backlogs_allowed = models.IntegerField(default=0)
+    work_experience_required = models.IntegerField(default=0)
+    intake = models.CharField(max_length=100)
+    ranking_tier = models.CharField(max_length=50) # Dream, Target, Safe
+
+    def __str__(self):
+        return f"{self.name} ({self.country})"
+
 class StudentProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_profile')
     

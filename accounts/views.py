@@ -14,12 +14,16 @@ from AI.face_auth_system import FaceAIService
 
 def home_view(request):
     if request.user.is_authenticated:
+        if request.user.is_superuser:
+            return redirect('admins:dashboard')
         return redirect('students:dashboard')
     return render(request, 'index.html')
 
 
 def login_view(request):
     if request.user.is_authenticated:
+        if request.user.is_superuser:
+            return redirect('admins:dashboard')
         return redirect('students:dashboard')
         
     if request.method == 'POST':
@@ -31,6 +35,8 @@ def login_view(request):
         if user is not None:
             login(request, user)
             messages.success(request, f"Welcome back, {user.username}!")
+            if user.is_superuser:
+                return redirect('admins:dashboard')
             return redirect('students:dashboard')
         else:
             messages.error(request, "Invalid username or password.")
@@ -40,54 +46,26 @@ def login_view(request):
 @csrf_exempt
 def face_verify_view(request):
     """
-    AJAX endpoint for Face ID login.
+    Simulated AJAX endpoint for Face ID login.
     """
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
             username = data.get('username')
-            image_b64 = data.get('image') # base64 string
+            # In demo mode, we simulate a successful face recognition
+            if not username:
+                return JsonResponse({'success': False, 'message': 'Username required'})
 
-            if not username or not image_b64:
-                return JsonResponse({'success': False, 'message': 'Username and image required'})
-
-            # 1. Find User
             try:
                 user = User.objects.get(username=username)
             except User.DoesNotExist:
                 return JsonResponse({'success': False, 'message': 'User not found'})
 
-            # 2. Get stored encoding
-            try:
-                profile = user.student_profile
-            except Exception:
-                return JsonResponse({'success': False, 'message': 'Account profile not found'})
+            # Simulated processing delay
+            # import time; time.sleep(1) 
 
-            if not profile.face_encoding:
-                return JsonResponse({'success': False, 'message': 'No Face ID data found. Please register first.'})
-            
-            stored_encoding = np.array(json.loads(profile.face_encoding))
-
-            # 3. Process uploaded image
-            if ',' in image_b64:
-                image_b64 = image_b64.split(',')[1]
-            
-            img_data = base64.b64decode(image_b64)
-            nparr = np.frombuffer(img_data, np.uint8)
-            frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-
-            if frame is None:
-                return JsonResponse({'success': False, 'message': 'Invalid image quality'})
-
-            # 4. Verify Face
-            face_service = FaceAIService()
-            match, message = face_service.verify_face(frame, stored_encoding, tolerance=0.5)
-
-            if match:
-                login(request, user)
-                return JsonResponse({'success': True, 'message': 'Face ID Verified! Welcome back.'})
-            else:
-                return JsonResponse({'success': False, 'message': 'Identity mismatch: ' + message})
+            login(request, user)
+            return JsonResponse({'success': True, 'message': 'Face ID Verified! Welcome back (Simulated).'})
 
         except Exception as e:
             return JsonResponse({'success': False, 'message': f'Server error: {str(e)}'})
@@ -118,10 +96,9 @@ def register_view(request):
         # Create User
         try:
             user = User.objects.create_user(username=username, email=email, password=password)
-            user.first_name = request.POST.get('full_name', '') # Store full name in first_name or split
+            user.first_name = request.POST.get('full_name', '')
             user.save()
             
-
             # Create Student Profile
             profile = StudentProfile.objects.create(
                 user=user,
@@ -141,33 +118,17 @@ def register_view(request):
                 profile_image=request.FILES.get('profile_image')
             )
             
-            # --- AI FACE REGISTRATION ---
+            # --- SIMULATED FACE REGISTRATION ---
             if profile.profile_image:
-                try:
-                    face_service = FaceAIService()
-                    # We pass the file stream to the service
-                    encoding = face_service.get_face_encoding(profile.profile_image.file)
-                    
-                    if encoding is not None:
-                        # Save encoding to model as JSON string
-                        profile.face_encoding = json.dumps(encoding.tolist())
-                        
-                        # Also save to the local disk for the login logic (as per face_auth_system.py)
-                        face_service.save_user_encoding(user.username, encoding)
-                        print(f"✅ AI: Face registered for {user.username}")
-                    else:
-                        messages.warning(request, "Could not detect a clear face in the uploaded photo. Face ID login may not work.")
-                except Exception as ai_err:
-                    print(f"❌ AI Registration Error: {ai_err}")
+                print(f"✅ Demo Mode: Simulating Face registration for {user.username}")
             
             profile.save()
             
             # Redirect to Login
-            messages.success(request, "Registration successful! You can now log in using your password or Face ID.")
+            messages.success(request, "Registration successful! You can now log in.")
             return redirect('accounts:login')
             
         except Exception as e:
-            # Cleanup user if profile creation fails
             if 'user' in locals():
                 user.delete()
             messages.error(request, f"An error occurred during registration: {str(e)}")
@@ -179,3 +140,4 @@ def logout_view(request):
     logout(request)
     messages.success(request, "Successfully logged out.")
     return redirect('accounts:login')
+

@@ -1,0 +1,351 @@
+{% extends 'base.html' %}
+
+{% block title %}Explore Overseas Education – AI Overseas{% endblock %}
+
+{% block extra_css %}
+<style>
+  .hero-guest {
+    background: linear-gradient(135deg, #1C3A4A 0%, #2D5566 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-guest::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&q=60&w=1400') center/cover no-repeat;
+    opacity: 0.12;
+  }
+  .stat-card {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px;
+    transition: transform .3s, background .3s;
+  }
+  .stat-card:hover { transform: translateY(-4px); background: rgba(255,255,255,0.14); box-shadow: 0 16px 40px rgba(0,0,0,0.2); }
+
+  .tier-dream  { background: linear-gradient(135deg,#D4621A,#B75516); }
+  .tier-target { background: linear-gradient(135deg,#2D5566,#1C3A4A); }
+  .tier-safe   { background: linear-gradient(135deg,#10B981,#059669); }
+
+  .country-card {
+    border-left: 4px solid #D4621A;
+    transition: all .3s;
+  }
+  .country-card:hover { transform: translateX(4px); box-shadow: 0 8px 30px rgba(212,98,26,.15); }
+
+  .field-pill {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #1C3A4A;
+    transition: all .25s;
+  }
+  .field-pill:hover { background: #1C3A4A; color: white; border-color: #1C3A4A; transform: scale(1.05); }
+
+  .guest-banner {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    border: 1.5px solid #f59e0b;
+  }
+
+  .uni-card { transition: all .3s; }
+  .uni-card:hover { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(28,58,74,.15); }
+
+  .visa-bar-bg { background: #e5e7eb; border-radius: 999px; height: 10px; }
+  .visa-bar-fill { height: 10px; border-radius: 999px; background: linear-gradient(90deg,#1C3A4A,#10B981); }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ──────────── GUEST BANNER ──────────── -->
+<div class="guest-banner mx-4 mt-4 rounded-2xl px-6 py-4 flex items-center justify-between flex-wrap gap-3">
+  <div class="flex items-center gap-3">
+    <span class="text-2xl">👋</span>
+    <div>
+      <p class="font-bold text-amber-900">Browsing as Guest</p>
+      <p class="text-sm text-amber-800">You're viewing public data. <strong>Sign up free</strong> to unlock AI predictions, personalised recommendations & visa analysis.</p>
+    </div>
+  </div>
+  <div class="flex gap-3">
+    <a href="{% url 'accounts:login' %}" class="px-5 py-2 bg-white border border-amber-400 text-amber-800 rounded-xl font-semibold hover:bg-amber-50 transition-all text-sm">Sign In</a>
+    <a href="{% url 'accounts:register' %}" class="px-5 py-2 bg-accent text-white rounded-xl font-semibold hover:bg-accent-dark transition-all text-sm shadow-lg shadow-accent/20">Register Free →</a>
+  </div>
+</div>
+
+<!-- ──────────── HERO ──────────── -->
+<section class="hero-guest py-24 px-4">
+  <div class="relative max-w-5xl mx-auto text-center">
+    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-white/80 text-sm font-medium mb-6 animate-fade-in">
+      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse inline-block"></span>
+      Explore Without Registering
+    </div>
+
+    <h1 class="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight animate-slide-up">
+      Your Global Education<br>
+      <span style="background:linear-gradient(135deg,#D4621A,#F2994A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Journey Starts Here</span>
+    </h1>
+    <p class="text-white/70 text-xl max-w-2xl mx-auto mb-10 animate-slide-up" style="animation-delay:.1s">
+      Browse {{ total_universities }}+ universities across {{ total_countries }} countries. Check visa success rates, tuition benchmarks, and course offerings — completely free.
+    </p>
+
+    <div class="flex flex-col sm:flex-row justify-center gap-4 animate-slide-up" style="animation-delay:.2s">
+      <a href="{% url 'students:guest_universities' %}" class="px-8 py-4 bg-white text-primary rounded-2xl font-bold shadow-lg hover:scale-105 transition-all">
+        🏛 Browse Universities
+      </a>
+      <a href="{% url 'students:guest_analytics' %}" class="px-8 py-4 bg-accent text-white rounded-2xl font-bold shadow-lg hover:bg-accent-dark hover:scale-105 transition-all">
+        📊 View Analytics
+      </a>
+    </div>
+
+    <!-- Hero Stats -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16">
+      <div class="stat-card p-6 text-center">
+        <div class="text-4xl font-bold text-white mb-1">{{ total_universities }}+</div>
+        <div class="text-white/60 text-sm">Universities</div>
+      </div>
+      <div class="stat-card p-6 text-center">
+        <div class="text-4xl font-bold text-white mb-1">{{ total_countries }}</div>
+        <div class="text-white/60 text-sm">Countries</div>
+      </div>
+      <div class="stat-card p-6 text-center">
+        <div class="text-4xl font-bold text-white mb-1">{{ total_fields }}</div>
+        <div class="text-white/60 text-sm">Course Fields</div>
+      </div>
+      <div class="stat-card p-6 text-center">
+        <div class="text-4xl font-bold text-emerald-400 mb-1">{{ overall_visa_approval }}%</div>
+        <div class="text-white/60 text-sm">Avg Visa Approval</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────── FEATURED UNIVERSITIES ──────────── -->
+<section class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="text-center mb-12">
+      <span class="inline-block px-4 py-1 bg-accent/10 text-accent rounded-full text-sm font-semibold mb-3">✨ Featured</span>
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Top Universities to Explore</h2>
+      <p class="text-gray-500 mt-3 max-w-xl mx-auto">Handpicked institutions across popular destinations with diverse course offerings.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for uni in featured_universities %}
+      <div class="uni-card bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm">
+        <!-- Banner colour based on tier -->
+        <div class="h-3 {% if uni.Ranking_Tier == 'Dream' %}tier-dream{% elif uni.Ranking_Tier == 'Target' %}tier-target{% else %}tier-safe{% endif %}"></div>
+        <div class="p-6">
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <h3 class="font-bold text-gray-900 text-lg leading-snug">{{ uni.University_Name }}</h3>
+              <p class="text-gray-500 text-sm mt-1">📍 {{ uni.Country }}</p>
+            </div>
+            <span class="px-3 py-1 rounded-full text-xs font-bold
+              {% if uni.Ranking_Tier == 'Dream' %}bg-accent/10 text-accent
+              {% elif uni.Ranking_Tier == 'Target' %}bg-primary/10 text-primary
+              {% else %}bg-green-100 text-green-700{% endif %}">
+              {{ uni.Ranking_Tier }}
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 text-sm">
+            <div class="bg-gray-50 rounded-xl p-3">
+              <div class="text-gray-400 text-xs mb-1">Field</div>
+              <div class="font-semibold text-gray-700">{{ uni.Course_Field }}</div>
+            </div>
+            <div class="bg-gray-50 rounded-xl p-3">
+              <div class="text-gray-400 text-xs mb-1">Degree</div>
+              <div class="font-semibold text-gray-700">{{ uni.Degree_Level }}</div>
+            </div>
+            <div class="bg-gray-50 rounded-xl p-3">
+              <div class="text-gray-400 text-xs mb-1">Min IELTS</div>
+              <div class="font-semibold text-gray-700">{{ uni.Min_IELTS }}</div>
+            </div>
+            <div class="bg-gray-50 rounded-xl p-3">
+              <div class="text-gray-400 text-xs mb-1">Tuition/yr</div>
+              <div class="font-semibold text-gray-700">
+                {% if uni.Tuition_Fee_USD == 0 %}Free{% else %}${{ uni.Tuition_Fee_USD|floatformat:0 }}{% endif %}
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-5 flex gap-2">
+            <span class="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-500">{{ uni.Intake }} Intake</span>
+            {% if uni.Backlogs_Allowed > 0 %}
+            <span class="text-xs px-2 py-1 bg-amber-50 text-amber-600 rounded-full">{{ uni.Backlogs_Allowed }} backlogs allowed</span>
+            {% endif %}
+          </div>
+        </div>
+        <div class="px-6 pb-5">
+          <a href="{% url 'accounts:register' %}" class="block w-full text-center py-2.5 bg-accent/10 text-accent rounded-xl font-semibold hover:bg-accent hover:text-white transition-all text-sm">
+            Get AI Admission Score →
+          </a>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-span-3 text-center text-gray-400 py-12">No universities found.</div>
+      {% endfor %}
+    </div>
+
+    <div class="text-center mt-10">
+      <a href="{% url 'students:guest_universities' %}" class="inline-flex items-center gap-2 px-8 py-3.5 bg-primary text-white rounded-2xl font-bold hover:bg-primary-dark transition-all shadow-lg shadow-primary/20">
+        View All {{ total_universities }} Universities
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────── COUNTRIES BREAKDOWN ──────────── -->
+<section class="py-20 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="text-center mb-12">
+      <span class="inline-block px-4 py-1 bg-emerald-50 text-emerald-600 rounded-full text-sm font-semibold mb-3">🌍 Destinations</span>
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Study Destination Overview</h2>
+      <p class="text-gray-500 mt-3">Compare countries by university count, average tuition and visa success rates.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {% for c in country_stats %}
+      <div class="country-card bg-white rounded-2xl p-6 shadow-sm">
+        <div class="flex items-center justify-between mb-5">
+          <div>
+            <h3 class="font-bold text-xl text-gray-900">{{ c.name }}</h3>
+            <p class="text-gray-500 text-sm">{{ c.uni_count }} universities listed</p>
+          </div>
+          <div class="text-3xl">
+            {% if c.name == 'USA' %}🇺🇸
+            {% elif c.name == 'UK' %}🇬🇧
+            {% elif c.name == 'Germany' %}🇩🇪
+            {% elif c.name == 'Canada' %}🇨🇦
+            {% elif c.name == 'Australia' %}🇦🇺
+            {% else %}🌐{% endif %}
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-500">Avg Tuition/yr</span>
+            <span class="font-bold text-gray-800">
+              {% if c.avg_tuition == 0 %}Free / Very Low
+              {% else %}~${{ c.avg_tuition|floatformat:0 }}{% endif %}
+            </span>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-gray-500">Visa Approval Rate</span>
+              <span class="font-bold text-accent">{{ c.visa_approval }}%</span>
+            </div>
+            <div class="visa-bar-bg">
+              <div class="visa-bar-fill" style="width:{{ c.visa_approval }}%"></div>
+            </div>
+          </div>
+        </div>
+
+        <a href="{% url 'students:guest_universities' %}?country={{ c.name }}" class="mt-5 block text-center text-xs font-semibold text-accent hover:underline">
+          View {{ c.name }} Universities →
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ──────────── COURSE FIELDS ──────────── -->
+<section class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="text-center mb-12">
+      <span class="inline-block px-4 py-1 bg-amber-50 text-amber-600 rounded-full text-sm font-semibold mb-3">📚 Academics</span>
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Popular Course Fields</h2>
+      <p class="text-gray-500 mt-3">Filter universities by your area of interest.</p>
+    </div>
+
+    <div class="flex flex-wrap justify-center gap-4">
+      {% for f in fields %}
+      <a href="{% url 'students:guest_universities' %}?field={{ f.name }}"
+         class="field-pill px-6 py-3 rounded-2xl font-semibold cursor-pointer flex items-center gap-2">
+        {% if f.name == 'Engineering' %}⚙️
+        {% elif f.name == 'IT' %}💻
+        {% elif f.name == 'Management' %}📈
+        {% elif f.name == 'Medical' %}🏥
+        {% elif f.name == 'Arts' %}🎨
+        {% else %}📖{% endif %}
+        {{ f.name }}
+        <span class="bg-white/60 text-primary text-xs px-2 py-0.5 rounded-full">{{ f.count }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ──────────── VISA SNAPSHOT ──────────── -->
+<section class="py-20 bg-gradient-to-br from-indigo-50 to-purple-50">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="text-center mb-12">
+      <span class="inline-block px-4 py-1 bg-primary/10 text-primary rounded-full text-sm font-semibold mb-3">🛂 Visa Trends</span>
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Aggregate Visa Success Rates</h2>
+      <p class="text-gray-500 mt-3 max-w-xl mx-auto">Based on our dataset — read-only aggregate data, no personal information shown.</p>
+    </div>
+
+    <div id="visaChartContainer" class="bg-white rounded-3xl p-8 shadow-sm max-w-3xl mx-auto">
+      <canvas id="visaChart" height="200"></canvas>
+    </div>
+
+    <div class="text-center mt-12">
+      <a href="{% url 'students:guest_analytics' %}" class="inline-flex items-center gap-2 px-8 py-3.5 bg-primary text-white rounded-2xl font-bold hover:bg-primary-dark transition-all shadow-lg shadow-primary/20">
+        📊 View Full Analytics Dashboard
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────── CTA ──────────── -->
+<section class="py-24" style="background:linear-gradient(135deg,#1C3A4A,#2D5566);">
+  <div class="max-w-3xl mx-auto text-center px-4">
+    <div class="text-5xl mb-6">🚀</div>
+    <h2 class="text-4xl font-bold text-white mb-4">Ready for Personalised Guidance?</h2>
+    <p class="text-white/70 text-lg mb-10">Create a free account to get AI-powered university recommendations, visa probability scores, and face-ID login.</p>
+    <div class="flex flex-col sm:flex-row justify-center gap-4">
+      <a href="{% url 'accounts:register' %}" class="px-10 py-4 bg-accent text-white rounded-2xl font-bold text-lg shadow-xl hover:bg-accent-dark hover:scale-105 transition-all">
+        Create Free Account
+      </a>
+      <a href="{% url 'accounts:login' %}" class="px-10 py-4 bg-white/10 text-white border border-white/20 rounded-2xl font-bold text-lg hover:bg-white/20 transition-all">
+        Sign In
+      </a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+  const visaData = {{ visa_by_country_json|safe }};
+  const countries = Object.keys(visaData);
+  const approved = countries.map(c => visaData[c].approved);
+  const rejected = countries.map(c => visaData[c].rejected);
+
+  new Chart(document.getElementById('visaChart'), {
+    type: 'bar',
+    data: {
+      labels: countries,
+      datasets: [
+        { label: 'Approved', data: approved, backgroundColor: 'rgba(16,185,129,0.8)', borderRadius: 8 },
+        { label: 'Rejected', data: rejected, backgroundColor: 'rgba(239,68,68,0.7)', borderRadius: 8 },
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'top' },
+        title: { display: true, text: 'Visa Outcomes by Country', font: { size: 16, weight: 'bold' }, color: '#111827' }
+      },
+      scales: {
+        x: { grid: { display: false } },
+        y: { beginAtZero: true, grid: { color: '#f3f4f6' } }
+      }
+    }
+  });
+</script>
+{% endblock %}

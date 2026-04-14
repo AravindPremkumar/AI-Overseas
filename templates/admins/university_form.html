@@ -1,0 +1,86 @@
+{% extends 'admins/base_admin.html' %}
+
+{% block title %}{{ title }} | Broadways Admin{% endblock %}
+{% block header_title %}{{ title }}{% endblock %}
+
+{% block admin_content %}
+<div class="max-w-4xl mx-auto bg-white rounded-[2.5rem] shadow-sm border border-gray-100 p-10">
+    <form method="POST" class="space-y-8">
+        {% csrf_token %}
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="md:col-span-2">
+                <label class="block text-gray-500 text-xs font-bold uppercase tracking-widest mb-3 ml-1">University Name</label>
+                {{ form.name }}
+            </div>
+            
+            <div>
+                <label class="block text-gray-500 text-xs font-bold uppercase tracking-widest mb-3 ml-1">Country</label>
+                {{ form.country }}
+            </div>
+            
+            <div>
+                <label class="block text-gray-500 text-xs font-bold uppercase tracking-widest mb-3 ml-1">Field of Study</label>
+                {{ form.course_field }}
+            </div>
+            
+             <div>
+                <label class="block text-gray-500 text-xs font-bold uppercase tracking-widest mb-3 ml-1">Degree Level</label>
+                {{ form.degree_level }}
+            </div>
+
+            <div>
+                <label class="block text-gray-500 text-xs font-bold uppercase tracking-widest mb-3 ml-1">Ranking Tier</label>
+                {{ form.ranking_tier }}
+            </div>
+
+            <div class="md:col-span-2">
+                <div class="h-px bg-gray-100 my-4"></div>
+                <h3 class="text-sm font-black text-primary uppercase tracking-widest mb-4">Admission & Requirements</h3>
+            </div>
+
+            <div>
+                <label class="block text-gray-500 text-xs font-bold uppercase tracking-widest mb-3 ml-1">Min IELTS Score</label>
+                {{ form.min_ielts }}
+            </div>
+
+            <div>
+                <label class="block text-gray-500 text-xs font-bold uppercase tracking-widest mb-3 ml-1">Min German Score</label>
+                {{ form.min_german_score }}
+            </div>
+
+            <div>
+                <label class="block text-gray-500 text-xs font-bold uppercase tracking-widest mb-3 ml-1">Min Academic %</label>
+                {{ form.min_academic_percentage }}
+            </div>
+
+            <div>
+                <label class="block text-gray-500 text-xs font-bold uppercase tracking-widest mb-3 ml-1">Tuition Fee (USD)</label>
+                {{ form.tuition_fee_usd }}
+            </div>
+
+            <div>
+                <label class="block text-gray-500 text-xs font-bold uppercase tracking-widest mb-3 ml-1">Backlogs Allowed</label>
+                {{ form.backlogs_allowed }}
+            </div>
+
+            <div>
+                <label class="block text-gray-500 text-xs font-bold uppercase tracking-widest mb-3 ml-1">Work Exp. (Years)</label>
+                {{ form.work_experience_required }}
+            </div>
+            
+            <div class="md:col-span-2">
+                 <label class="block text-gray-500 text-xs font-bold uppercase tracking-widest mb-3 ml-1">Intake Sessions</label>
+                {{ form.intake }}
+            </div>
+        </div>
+
+        <div class="pt-8 flex items-center justify-between border-t border-gray-50 mt-10">
+            <a href="{% url 'admins:manage_universities' %}" class="text-gray-400 font-bold hover:text-gray-600 transition-colors uppercase tracking-widest text-xs">Cancel & Return</a>
+            <button type="submit" class="bg-accent hover:bg-accent-dark text-white px-10 py-4 rounded-2xl font-bold font-display shadow-xl shadow-accent/20 transition-all hover:scale-105 active:scale-95 tracking-widest uppercase">
+                {% if edit %}Update University Records{% else %}Save New University{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

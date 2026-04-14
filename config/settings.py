@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     # Internal
     'accounts',
     'students',
+    'admins',
 ]
 
 MIDDLEWARE = [

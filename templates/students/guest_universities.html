@@ -1,0 +1,252 @@
+{% extends 'base.html' %}
+
+{% block title %}Browse Universities – AI Overseas{% endblock %}
+
+{% block extra_css %}
+<style>
+  .filter-bar {
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .filter-pill {
+    background: #f3f4f6;
+    border: 1.5px solid transparent;
+    color: #374151;
+    border-radius: 999px;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .filter-pill.active, .filter-pill:hover {
+    background: #D4621A;
+    color: white;
+    border-color: #D4621A;
+  }
+  .uni-card {
+    background: white;
+    border-radius: 24px;
+    border: 1px solid #f0f0f0;
+    box-shadow: 0 2px 12px rgba(0,0,0,.04);
+    transition: all .3s;
+    overflow: hidden;
+  }
+  .uni-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 50px rgba(28,58,74,.14);
+    border-color: #2D5566;
+  }
+  .tier-badge-dream  { background:#ede9fe; color:#7c3aed; }
+  .tier-badge-target { background:#dbeafe; color:#1d4ed8; }
+  .tier-badge-safe   { background:#d1fae5; color:#059669; }
+  .tier-strip-dream  { background:linear-gradient(90deg,#a78bfa,#7c3aed); }
+  .tier-strip-target { background:linear-gradient(90deg,#60a5fa,#2563eb); }
+  .tier-strip-safe   { background:linear-gradient(90deg,#34d399,#059669); }
+
+  .search-wrap input:focus { outline: none; }
+
+  .skeleton { background: linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
+  @keyframes shimmer { 0% {background-position:200% 0} 100% {background-position:-200% 0} }
+
+  .page-hero {
+    background: linear-gradient(135deg,#1C3A4A 0%,#2D5566 100%);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Guest Banner -->
+<div class="bg-amber-50 border-b border-amber-200 px-6 py-3 flex items-center justify-between flex-wrap gap-2">
+  <p class="text-sm text-amber-800">
+    👤 <strong>Guest Mode</strong> — browsing {{ universities|length }} universities publicly.
+    <a href="{% url 'accounts:register' %}" class="font-bold underline text-accent ml-1">Register free</a> for AI-powered recommendations.
+  </p>
+  <div class="flex gap-2 text-sm">
+    <a href="{% url 'students:guest_explore' %}" class="text-accent font-semibold hover:underline">← Back to Explore</a>
+    <span class="text-gray-300">|</span>
+    <a href="{% url 'students:guest_analytics' %}" class="text-accent font-semibold hover:underline">📊 Analytics</a>
+  </div>
+</div>
+
+<!-- Page Hero -->
+<div class="page-hero py-12 px-4 text-center">
+  <h1 class="text-4xl font-bold text-white mb-3">Browse Universities</h1>
+  <p class="text-indigo-200 max-w-xl mx-auto">Search and filter {{ universities|length }} universities across countries, fields, and ranking tiers.</p>
+</div>
+
+<!-- ──────────── Sticky Filter Bar ──────────── -->
+<div class="filter-bar sticky top-16 z-40 py-4 px-4">
+  <form method="GET" action="{% url 'students:guest_universities' %}" id="filterForm">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center gap-3">
+
+      <!-- Search -->
+      <div class="flex-1 min-w-[200px] relative search-wrap">
+        <input type="text" name="search" value="{{ search_query }}" placeholder="Search university, country, field…"
+          class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm font-medium focus:border-accent transition-all"
+          id="searchInput">
+        <svg class="absolute left-3 top-3 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/>
+        </svg>
+      </div>
+
+      <!-- Country -->
+      <select name="country" onchange="document.getElementById('filterForm').submit()"
+        class="px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 focus:border-accent focus:outline-none">
+        <option value="">All Countries</option>
+        {% for c in countries %}
+        <option value="{{ c }}" {% if c == selected_country %}selected{% endif %}>{{ c }}</option>
+        {% endfor %}
+      </select>
+
+      <!-- Tier -->
+      <select name="tier" onchange="document.getElementById('filterForm').submit()"
+        class="px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 focus:border-accent focus:outline-none">
+        <option value="">All Tiers</option>
+        {% for t in tiers %}
+        <option value="{{ t }}" {% if t == selected_tier %}selected{% endif %}>{{ t }}</option>
+        {% endfor %}
+      </select>
+
+      <!-- Field -->
+      <select name="field" onchange="document.getElementById('filterForm').submit()"
+        class="px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 focus:border-accent focus:outline-none">
+        <option value="">All Fields</option>
+        {% for f in fields %}
+        <option value="{{ f }}" {% if f == selected_field %}selected{% endif %}>{{ f }}</option>
+        {% endfor %}
+      </select>
+
+      <button type="submit" class="px-5 py-2.5 bg-accent text-white rounded-xl text-sm font-semibold hover:bg-accent-dark transition-all">
+        Search
+      </button>
+      {% if search_query or selected_country or selected_tier or selected_field %}
+      <a href="{% url 'students:guest_universities' %}" class="px-5 py-2.5 bg-gray-100 text-gray-600 rounded-xl text-sm font-semibold hover:bg-gray-200 transition-all">
+        Clear
+      </a>
+      {% endif %}
+    </div>
+  </form>
+</div>
+
+<!-- ──────────── Results ──────────── -->
+<div class="max-w-7xl mx-auto px-4 py-10">
+
+  <!-- Result count + legend -->
+  <div class="flex items-center justify-between mb-8 flex-wrap gap-3">
+    <div>
+      <span class="text-2xl font-bold text-gray-900">{{ universities|length }}</span>
+      <span class="text-gray-500 ml-1">universities found</span>
+      {% if search_query %}<span class="ml-2 text-sm text-accent font-medium">for "{{ search_query }}"</span>{% endif %}
+    </div>
+
+    <div class="flex items-center gap-3">
+      <span class="text-xs text-gray-500 font-medium uppercase tracking-wide">Tier:</span>
+      <span class="flex items-center gap-1 text-xs font-semibold tier-badge-dream px-2.5 py-1 rounded-full">Dream</span>
+      <span class="flex items-center gap-1 text-xs font-semibold tier-badge-target px-2.5 py-1 rounded-full">Target</span>
+      <span class="flex items-center gap-1 text-xs font-semibold tier-badge-safe px-2.5 py-1 rounded-full">Safe</span>
+    </div>
+  </div>
+
+  {% if universities %}
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5" id="uniGrid">
+    {% for uni in universities %}
+    <div class="uni-card">
+      <!-- Tier colour strip -->
+      <div class="h-2 {% if uni.Ranking_Tier == 'Dream' %}tier-strip-dream{% elif uni.Ranking_Tier == 'Target' %}tier-strip-target{% else %}tier-strip-safe{% endif %}"></div>
+
+      <div class="p-5">
+        <!-- Header -->
+        <div class="flex justify-between items-start mb-3">
+          <h3 class="font-bold text-gray-900 leading-snug text-sm flex-1 pr-2">{{ uni.University_Name }}</h3>
+          <span class="text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0
+            {% if uni.Ranking_Tier == 'Dream' %}tier-badge-dream
+            {% elif uni.Ranking_Tier == 'Target' %}tier-badge-target
+            {% else %}tier-badge-safe{% endif %}">{{ uni.Ranking_Tier }}</span>
+        </div>
+
+        <div class="flex items-center gap-1.5 text-gray-500 text-xs mb-4">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+          </svg>
+          {{ uni.Country }}
+          <span class="mx-1">·</span>
+          📚 {{ uni.Course_Field }}
+        </div>
+
+        <!-- Stats grid -->
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div class="bg-gray-50 rounded-lg p-2.5">
+            <p class="text-gray-400 mb-0.5">Degree</p>
+            <p class="font-bold text-gray-700">{{ uni.Degree_Level }}</p>
+          </div>
+          <div class="bg-gray-50 rounded-lg p-2.5">
+            <p class="text-gray-400 mb-0.5">Min IELTS</p>
+            <p class="font-bold text-gray-700">{{ uni.Min_IELTS }}</p>
+          </div>
+          <div class="bg-gray-50 rounded-lg p-2.5">
+            <p class="text-gray-400 mb-0.5">Tuition/yr</p>
+            <p class="font-bold text-gray-700">{% if uni.Tuition_Fee_USD == 0 %}Free{% else %}<span class="text-green-600">${{ uni.Tuition_Fee_USD|floatformat:0 }}</span>{% endif %}</p>
+          </div>
+          <div class="bg-gray-50 rounded-lg p-2.5">
+            <p class="text-gray-400 mb-0.5">Intake</p>
+            <p class="font-bold text-gray-700">{{ uni.Intake }}</p>
+          </div>
+        </div>
+
+        <!-- Tags -->
+        <div class="flex flex-wrap gap-1.5 mt-3">
+          {% if uni.Backlogs_Allowed > 0 %}
+          <span class="text-xs px-2 py-0.5 bg-amber-50 text-amber-600 rounded-full">{{ uni.Backlogs_Allowed }} backlogs OK</span>
+          {% else %}
+          <span class="text-xs px-2 py-0.5 bg-red-50 text-red-500 rounded-full">No backlogs</span>
+          {% endif %}
+          {% if uni.Work_Experience_Required > 0 %}
+          <span class="text-xs px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full">{{ uni.Work_Experience_Required }}yr exp req.</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="px-5 pb-5">
+        <a href="{% url 'accounts:register' %}" class="block w-full text-center py-2 bg-accent/10 text-accent rounded-xl text-xs font-bold hover:bg-accent hover:text-white transition-all">
+          Get My Match Score →
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="text-center py-24">
+    <div class="text-6xl mb-6">🔍</div>
+    <h3 class="text-2xl font-bold text-gray-700 mb-2">No universities found</h3>
+    <p class="text-gray-500 mb-6">Try adjusting your filters or search term.</p>
+    <a href="{% url 'students:guest_universities' %}" class="px-6 py-3 bg-indigo-600 text-white rounded-2xl font-bold hover:bg-indigo-700 transition-all">
+      Clear Filters
+    </a>
+  </div>
+  {% endif %}
+</div>
+
+<!-- ──────────── CTA strip ──────────── -->
+<div class="bg-primary py-8 px-4 text-center">
+  <p class="text-white font-semibold text-lg mb-4">Want personalised recommendations based on your actual profile?</p>
+  <a href="{% url 'accounts:register' %}" class="inline-block px-8 py-3 bg-white text-primary rounded-2xl font-bold hover:bg-gray-50 transition-all shadow-lg">
+    🚀 Create Free Account
+  </a>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Live search filter
+  document.getElementById('searchInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      document.getElementById('filterForm').submit();
+    }
+  });
+</script>
+{% endblock %}
